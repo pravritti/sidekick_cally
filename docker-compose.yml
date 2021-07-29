@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: 
+      - '5432:5432'
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+  sidekick_cally:
+    image: node:14
+    command: sh -c "yarn add --dev typescript @types/react @types/node && yarn install && npx prisma db push && yarn run dev && npx prisma studio"
+    working_dir: /app
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - db
+    ports:
+      - '3000:3000'
+        
+volumes:
+  postgres-db:
